@@ -5,8 +5,14 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
+from sqlalchemy import create_engine, types
 
-data_frame = pd.read_csv('dataset2.csv', sep=";")
+engine = create_engine('mysql://ramsonware:server77VM@localhost/data_source') # enter your password and database names here
+#data_frame = pd.read_csv('dataset2.csv', sep=";")
+data_frame = pd.read_sql('SELECT * FROM data', con=engine)
+data_frame.drop('ID', inplace=True, axis=1)
+data_frame.drop('DATE_ADDED', inplace=True, axis=1)
 data_frame.fillna(value=0, inplace=True)
 data_frame.replace('N/A', 0, inplace=True)
 data_frame.replace('', 0, inplace=True)
@@ -30,6 +36,9 @@ lr_test_r2 = r2_score(y_test, y_lr_test_pred)
 
 print(f"mean squared error: {lr_train_mse}")
 print(f"r2 score: {lr_test_r2}")
+
+filename = 'model.sav'
+pickle.dump(lr, open(filename, 'wb'))
 
 
 #showing results
